@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, X, Moon } from "lucide-react";
+import { toast } from "sonner";
 import { useScheduleStore } from "@/lib/schedule-store";
 import { useRamadanTime } from "@/hooks/use-ramadan-time";
 import { cn } from "@/lib/utils";
@@ -25,13 +26,19 @@ export function PlannerCourseCard({
 
   const selected = isCourseSelected(course.id);
 
+  const label = `${course.courseCode} ${course.courseNumber}`;
+
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (selected) {
       removeCourse(course.id);
+      toast.success(`Removed ${label}`);
     } else if (!conflict) {
       addCourse(course);
+      toast.success(`Added ${label}`, {
+        description: course.title,
+      });
     }
   };
 
@@ -39,8 +46,12 @@ export function PlannerCourseCard({
     e.preventDefault();
     e.stopPropagation();
     if (conflict && conflictCourses != null) {
+      const replaced = conflictCourses
+        .map((c) => `${c.courseCode}${c.courseNumber}`)
+        .join(", ");
       conflictCourses.forEach((c) => removeCourse(c.id));
       addCourse(course);
+      toast.success(`Replaced ${replaced} with ${label}`);
     }
   };
 

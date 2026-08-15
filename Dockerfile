@@ -9,6 +9,15 @@ COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
+
+# Vite bakes VITE_* env vars into the client bundle at build time.
+ARG VITE_BASE_URL=https://api.kauindex.com
+ARG VITE_GEN_BASE_URL=https://api-schedly.y-tools.xyz
+ARG VITE_IN_DEVELOPMENT=no
+ENV VITE_BASE_URL=$VITE_BASE_URL \
+    VITE_GEN_BASE_URL=$VITE_GEN_BASE_URL \
+    VITE_IN_DEVELOPMENT=$VITE_IN_DEVELOPMENT
+
 RUN pnpm run build
 
 # Stage 2: Production

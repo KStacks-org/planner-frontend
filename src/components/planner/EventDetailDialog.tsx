@@ -1,15 +1,19 @@
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, User, BookOpen, Moon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, MapPin, User, BookOpen, Moon, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Course, Schedule } from "@/types";
 import { useRamadanTime } from "@/hooks/use-ramadan-time";
+import { useScheduleStore } from "@/lib/schedule-store";
+import { toast } from "sonner";
 
 interface EventDetailDialogProps {
   event: { course: Course; schedule: Schedule } | null;
@@ -18,10 +22,18 @@ interface EventDetailDialogProps {
 
 export function EventDetailDialog({ event, onClose }: EventDetailDialogProps) {
   const { isRamadanMode, formatRamadanTime } = useRamadanTime();
+  const removeCourse = useScheduleStore((s) => s.removeCourse);
 
   if (!event) return null;
 
   const displayTime = formatRamadanTime(event.schedule.time);
+
+  const handleRemove = () => {
+    const label = `${event.course.courseCode} ${event.course.courseNumber}`;
+    removeCourse(event.course.id);
+    onClose();
+    toast.success(`Removed ${label} from your schedule`);
+  };
 
   return (
     <Dialog open={!!event} onOpenChange={(open) => !open && onClose()}>
@@ -100,6 +112,20 @@ export function EventDetailDialog({ event, onClose }: EventDetailDialogProps) {
             </div>
           </div>
         </div>
+
+        <DialogFooter className="gap-2 sm:justify-between">
+          <Button
+            variant="destructive"
+            onClick={handleRemove}
+            className="gap-2"
+          >
+            <Trash2 className="h-4 w-4" />
+            Remove from schedule
+          </Button>
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -25,6 +25,7 @@ import {
   Edit,
   GraduationCap,
   Clock,
+  Sparkles,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -43,15 +44,34 @@ import {
 } from "@/components/ui/dialog";
 import { useScheduleStore } from "@/lib/schedule-store";
 import { parseTimeRange } from "@/lib/schedule-utils";
-import { KauFooter } from "@/components/layout/KauFooter";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { Course, SearchParams } from "@/types";
+import { useUiStore } from "@/lib/ui-store";
+import { GeneratorPanel } from "@/components/generator/GeneratorPanel";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
-  component: SchedulePage,
+  component: RootPage,
 });
 
-function SchedulePage() {
+function RootPage() {
+  const view = useUiStore((s) => s.view);
+  const setView = useUiStore((s) => s.setView);
+
+  return (
+    <div className="h-screen flex flex-col bg-background font-sans overflow-hidden">
+      <KauHeader />
+      {view === "planner" ? (
+        <PlannerView />
+      ) : (
+        <GeneratorPanel onScheduleAdded={() => setView("planner")} />
+      )}
+    </div>
+  );
+}
+
+function PlannerView() {
+  const setView = useUiStore((s) => s.setView);
   const {
     tabs,
     activeTabId,
@@ -138,7 +158,9 @@ function SchedulePage() {
 
   const confirmRename = () => {
     if (tabToEdit && newName.trim()) {
-      renameTab(tabToEdit.id, newName.trim());
+      const trimmed = newName.trim();
+      renameTab(tabToEdit.id, trimmed);
+      toast.success(`Renamed to "${trimmed}"`);
       setRenameDialogOpen(false);
       setTabToEdit(null);
     }
@@ -151,7 +173,9 @@ function SchedulePage() {
 
   const confirmDelete = () => {
     if (tabToEdit) {
+      const name = tabToEdit.name;
       removeTab(tabToEdit.id);
+      toast.success(`Deleted "${name}"`);
       setDeleteDialogOpen(false);
       setTabToEdit(null);
     }
@@ -202,13 +226,18 @@ function SchedulePage() {
         skipFonts: true,
       });
 
-      const link = document.createElement("a");
-      link.download =
+      const filename =
         (tabs.find((t) => t.id === activeTabId)?.name || "schedule") + ".png";
+      const link = document.createElement("a");
+      link.download = filename;
       link.href = dataUrl;
       link.click();
+      toast.success("Schedule downloaded", { description: filename });
     } catch (error) {
       console.error("Failed to download schedule:", error);
+      toast.error("Download failed", {
+        description: "Please try again.",
+      });
     } finally {
       setIsDownloading(false);
     }
@@ -217,9 +246,7 @@ function SchedulePage() {
   const activeTab = tabs.find((t) => t.id === activeTabId);
 
   return (
-    <div className="h-screen flex flex-col bg-background font-sans overflow-hidden">
-      <KauHeader />
-
+    <>
       <div className="flex flex-1 md:flex overflow-hidden relative z-10 bg-background">
         <main className="flex-1 p-2 md:p-4 overflow-hidden w-full flex flex-col">
           <div className="max-w-7xl w-full mx-auto h-full flex flex-col">
@@ -257,6 +284,16 @@ function SchedulePage() {
                 </div>
 
                 <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-2 h-8 md:h-9 hidden md:inline-flex text-primary hover:text-primary hover:bg-primary/10"
+                    onClick={() => setView("generate")}
+                    title="Auto-generate schedules"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    <span>Generate</span>
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
@@ -381,18 +418,17 @@ function SchedulePage() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      onClick={() =>
-                        addTab(`Schedule ${tabs.length + 1}`)
-                      }
-                      disabled={tabs.length >= 5}
-                      className="ml-1 p-1.5 hover:bg-muted text-muted-foreground hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed rounded"
+                      onClick={() => {
+                        const name = `Schedule ${tabs.length + 1}`;
+                        addTab(name);
+                        toast.success(`Created "${name}"`);
+                      }}
+                      className="ml-1 p-1.5 hover:bg-muted text-muted-foreground hover:text-primary transition-colors rounded"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
                   </TooltipTrigger>
-                  {tabs.length >= 5 && (
-                    <TooltipContent>Maximum 5 schedules</TooltipContent>
-                  )}
+                  <TooltipContent>New schedule</TooltipContent>
                 </Tooltip>
               </div>
             </div>
@@ -622,9 +658,6 @@ function SchedulePage() {
         </DialogContent>
       </Dialog>
 
-      <div className="hidden md:block">
-        <KauFooter />
-      </div>
-    </div>
+    </>
   );
 }

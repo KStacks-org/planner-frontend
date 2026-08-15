@@ -15,7 +15,8 @@ interface ScheduleState {
   activeTabId: string;
 
   // Tab Actions
-  addTab: (name: string) => void;
+  addTab: (name: string) => string;
+  addTabWithCourses: (name: string, courses: Course[]) => string;
   removeTab: (tabId: string) => void;
   renameTab: (tabId: string, newName: string) => void;
   setActiveTab: (tabId: string) => void;
@@ -40,15 +41,21 @@ export const useScheduleStore = create<ScheduleState>()(
 
       // --- Tab Management ---
       addTab: (name) => {
-        const { tabs } = get();
-        // --- LIMIT CHECK: Max 5 tabs ---
-        if (tabs.length >= 5) return;
-
         const newId = crypto.randomUUID();
         set((state) => ({
           tabs: [...state.tabs, { id: newId, name, courses: [] }],
           activeTabId: newId,
         }));
+        return newId;
+      },
+
+      addTabWithCourses: (name, courses) => {
+        const newId = crypto.randomUUID();
+        set((state) => ({
+          tabs: [...state.tabs, { id: newId, name, courses }],
+          activeTabId: newId,
+        }));
+        return newId;
       },
 
       removeTab: (tabId) => {

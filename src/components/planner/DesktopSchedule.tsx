@@ -9,9 +9,12 @@ import {
   MapPin,
   BookOpen,
   Coffee,
+  Sparkles,
 } from "lucide-react";
 import { getCourseHue } from "@/lib/get-course-hue";
 import { useRamadanTime } from "@/hooks/use-ramadan-time";
+import { useUiStore } from "@/lib/ui-store";
+import { Button } from "@/components/ui/button";
 import { EventDetailDialog } from "./EventDetailDialog";
 import {
   useScheduleData,
@@ -22,6 +25,7 @@ import type { Course, Schedule } from "@/types";
 
 export function DesktopSchedule() {
   const selectedCourses = useScheduleStore((s) => s.getActiveCourses());
+  const setView = useUiStore((s) => s.setView);
   const { isRamadanMode } = useRamadanTime();
   const { scheduleByDay } = useScheduleData(5);
 
@@ -39,9 +43,18 @@ export function DesktopSchedule() {
         <p className="font-semibold text-lg text-foreground">
           Your schedule is empty
         </p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Click &quot;Add Course&quot; to start building your schedule
+        <p className="text-sm text-muted-foreground mt-2 max-w-sm">
+          Add courses one-by-one, or let the generator build one for you.
         </p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setView("generate")}
+          className="mt-5 gap-2 text-primary border-primary/40 hover:bg-primary/10 hover:text-primary"
+        >
+          <Sparkles className="h-4 w-4" />
+          Auto-generate schedules
+        </Button>
       </div>
     );
   }
