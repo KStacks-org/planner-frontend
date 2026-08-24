@@ -11,7 +11,7 @@ export function KauFooter() {
 				{/* Brand & Copyright */}
 				<div className="flex flex-col items-center md:items-start gap-1">
 					<div className="font-bold text-foreground tracking-tight">
-						K<span className="text-green-600 dark:text-green-400">Planner</span>
+						Planner
 					</div>
 					<span>&copy; {currentYear} All rights reserved.</span>
 				</div>

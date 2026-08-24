@@ -255,7 +255,7 @@ function PlannerView() {
               <div className="flex justify-between items-center px-1">
                 <div className="flex items-center gap-3">
                   <h1 className="text-xl md:text-2xl font-bold tracking-tight">
-                    Planner
+                    My Schedule
                   </h1>
                   <Tooltip>
                     <TooltipTrigger asChild>

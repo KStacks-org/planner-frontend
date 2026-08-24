@@ -1,6 +1,6 @@
 {
-  "name": "KPlanner",
-  "short_name": "KPlanner",
+  "name": "Planner",
+  "short_name": "Planner",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

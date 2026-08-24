@@ -49,7 +49,7 @@ function ViewSwitch() {
         )}
       >
         <Calendar className="h-3.5 w-3.5" />
-        Planner
+        Plan
       </button>
       <button
         onClick={() => setView("generate")}
@@ -109,14 +109,26 @@ export function KauHeader() {
     <header className="bg-background border-b border-border h-14 px-3 md:px-6 flex justify-between items-center sticky top-0 z-50 shrink-0">
       {/* Logo */}
       <div
-        className="flex items-center gap-3 cursor-pointer select-none group"
+        className="flex items-center gap-2.5 cursor-pointer select-none group"
         onClick={() => {
           setView("planner");
           navigate({ to: "/" });
         }}
       >
+        <img
+          src="/planner-light.svg"
+          alt=""
+          aria-hidden="true"
+          className="block dark:hidden h-6 md:h-7 w-auto"
+        />
+        <img
+          src="/planner-dark.svg"
+          alt=""
+          aria-hidden="true"
+          className="hidden dark:block h-6 md:h-7 w-auto"
+        />
         <div className="font-bold text-xl md:text-2xl tracking-tight text-foreground">
-          K<span className="text-green-600 dark:text-green-400">Planner</span>
+          Planner
         </div>
       </div>
 
