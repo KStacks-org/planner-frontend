@@ -106,7 +106,7 @@ function PlannerView() {
       window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   const [localFilters, setLocalFilters] = useState<Partial<SearchParams>>({
-    termCode: "202701",
+    termCode: "202702",
     page: 1,
     limit: 10,
   });

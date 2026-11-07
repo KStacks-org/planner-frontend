@@ -126,7 +126,7 @@ export const useScheduleStore = create<ScheduleState>()(
           const tab = tabs.find((t) => t.id === activeTabId);
           if (!tab || !tab.courses?.length) return;
 
-          const termCode = (tab.courses[0] as any).termCode ?? "202701";
+          const termCode = (tab.courses[0] as any).termCode ?? "202702";
 
           const crns = tab.courses
             .map((c) => String((c as any).crn ?? ""))
