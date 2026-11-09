@@ -90,6 +90,9 @@ function PlannerView() {
   const [sidebarMode, setSidebarMode] = useState<"view" | "search">("view");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  
+  // --- FIX: Form Reset Key ---
+  const [searchFormKey, setSearchFormKey] = useState(Date.now());
 
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -149,6 +152,27 @@ function PlannerView() {
   const handlePageChange = (newPage: number) => {
     setLocalFilters((prev) => ({ ...prev, page: newPage }));
   };
+
+  // --- NEW FEATURE: Quick Switch Section ---
+  const handleSwitchSection = (course: Course) => {
+    const searchTerm = `${course.courseCode} ${course.courseNumber}`;
+    
+    setLocalFilters((prev) => ({
+      ...prev,
+      // Sending multiple common keys to ensure the SearchForm picks it up
+      search: searchTerm,
+      query: searchTerm,
+      q: searchTerm,
+      page: 1,
+    } as any));
+    
+    // Force the search form to completely re-render with the new initialValues
+    setSearchFormKey(Date.now());
+    
+    setSidebarMode("search");
+    setIsSheetOpen(true);
+  };
+  // -----------------------------------------
 
   const openRenameDialog = (id: string, currentName: string) => {
     setTabToEdit({ id, name: currentName });
@@ -453,7 +477,15 @@ function PlannerView() {
               <SheetTitle className="flex items-center gap-2 text-lg">
                 {sidebarMode === "search" ? (
                   <>
-                    <SearchIcon className="h-5 w-5 text-muted-foreground" />{" "}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 -ml-1.5"
+                      onClick={() => setSidebarMode("view")}
+                      title="Back to My Courses"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </Button>
                     Find Courses
                   </>
                 ) : (
@@ -473,7 +505,9 @@ function PlannerView() {
               {sidebarMode === "search" && (
                 <div className="flex flex-col min-h-full">
                   <div className="p-4 border-b bg-background sticky top-0 z-20 shadow-sm">
+                    {/* The key here ensures the component resets entirely on each quick switch */}
                     <SearchForm
+                      key={searchFormKey}
                       initialValues={localFilters}
                       isLoading={isLoading}
                       layout="sidebar"
@@ -564,6 +598,7 @@ function PlannerView() {
                           noOutline
                           key={course.id}
                           course={course}
+                          onSwitchSection={() => handleSwitchSection(course)}
                         />
                       ))}
                     </>
@@ -657,7 +692,6 @@ function PlannerView() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </>
   );
 }

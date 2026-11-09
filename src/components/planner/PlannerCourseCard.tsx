@@ -13,6 +13,7 @@ interface PlannerCourseCardProps {
   conflict?: boolean;
   conflictCourse?: Course[];
   noOutline?: boolean;
+  onSwitchSection?: () => void;
 }
 
 export function PlannerCourseCard({
@@ -20,6 +21,7 @@ export function PlannerCourseCard({
   conflict = false,
   conflictCourse: conflictCourses,
   noOutline = false,
+  onSwitchSection,
 }: PlannerCourseCardProps) {
   const { addCourse, removeCourse, isCourseSelected } = useScheduleStore();
   const { isRamadanMode, formatRamadanTime } = useRamadanTime();
@@ -77,6 +79,7 @@ export function PlannerCourseCard({
     >
       <div className="p-3 flex items-start gap-3">
         <div className="flex-1 min-w-0">
+          {/* Card Header & Badges */}
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <div
               className="w-4 h-4 shadow-sm"
@@ -126,6 +129,7 @@ export function PlannerCourseCard({
             </Button>
           </div>
 
+          {/* Course Title */}
           <h4
             className={cn(
               "font-bold text-sm leading-tight mb-2 line-clamp-2",
@@ -135,6 +139,7 @@ export function PlannerCourseCard({
             {course.title}
           </h4>
 
+          {/* Schedules */}
           <div className="space-y-2">
             {course.schedules.map((s, i) => (
               <div
@@ -166,6 +171,7 @@ export function PlannerCourseCard({
             ))}
           </div>
 
+          {/* Conflict Warnings */}
           {conflictCourses && conflictCourses.length > 0 && !selected && (
             <div className="mt-2 w-full text-[10px] text-destructive flex items-center gap-1 font-medium bg-destructive/5 p-1">
               <span>
@@ -181,6 +187,22 @@ export function PlannerCourseCard({
                 Replace
               </button>
             </div>
+          )}
+
+          {/* Switch Section Button */}
+          {onSwitchSection && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="w-full mt-3 h-7 text-xs"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onSwitchSection();
+              }}
+            >
+              Switch Section
+            </Button>
           )}
         </div>
       </div>
