@@ -19,7 +19,6 @@ import {
   ChevronRight,
   Plus,
   BookOpen,
-  Search as SearchIcon,
   Download,
   X,
   Edit,
