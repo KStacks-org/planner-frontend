@@ -89,8 +89,8 @@ function PlannerView() {
   const [sidebarMode, setSidebarMode] = useState<"view" | "search">("view");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  
-  // --- FIX: Form Reset Key ---
+
+  // --- Form Reset Key ---
   const [searchFormKey, setSearchFormKey] = useState(Date.now());
 
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -152,26 +152,19 @@ function PlannerView() {
     setLocalFilters((prev) => ({ ...prev, page: newPage }));
   };
 
-  // --- NEW FEATURE: Quick Switch Section ---
+  // --- Quick Switch Section ---
   const handleSwitchSection = (course: Course) => {
-    const searchTerm = `${course.courseCode} ${course.courseNumber}`;
-    
     setLocalFilters((prev) => ({
-      ...prev,
-      // Sending multiple common keys to ensure the SearchForm picks it up
-      search: searchTerm,
-      query: searchTerm,
-      q: searchTerm,
+      termCode: prev.termCode ?? "202702",
       page: 1,
-    } as any));
-    
-    // Force the search form to completely re-render with the new initialValues
+      limit: prev.limit ?? 10,
+      q: `${course.courseCode} ${course.courseNumber}`,
+    }));
+
     setSearchFormKey(Date.now());
-    
     setSidebarMode("search");
     setIsSheetOpen(true);
   };
-  // -----------------------------------------
 
   const openRenameDialog = (id: string, currentName: string) => {
     setTabToEdit({ id, name: currentName });
@@ -504,7 +497,6 @@ function PlannerView() {
               {sidebarMode === "search" && (
                 <div className="flex flex-col min-h-full">
                   <div className="p-4 border-b bg-background sticky top-0 z-20 shadow-sm">
-                    {/* The key here ensures the component resets entirely on each quick switch */}
                     <SearchForm
                       key={searchFormKey}
                       initialValues={localFilters}
