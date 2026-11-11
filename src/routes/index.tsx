@@ -19,7 +19,6 @@ import {
   ChevronRight,
   Plus,
   BookOpen,
-  Search as SearchIcon,
   Download,
   X,
   Edit,
@@ -91,6 +90,9 @@ function PlannerView() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  // --- Form Reset Key ---
+  const [searchFormKey, setSearchFormKey] = useState(Date.now());
+
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [tabToEdit, setTabToEdit] = useState<{
@@ -148,6 +150,20 @@ function PlannerView() {
 
   const handlePageChange = (newPage: number) => {
     setLocalFilters((prev) => ({ ...prev, page: newPage }));
+  };
+
+  // --- Quick Switch Section ---
+  const handleSwitchSection = (course: Course) => {
+    setLocalFilters((prev) => ({
+      termCode: prev.termCode ?? "202702",
+      page: 1,
+      limit: prev.limit ?? 10,
+      q: `${course.courseCode} ${course.courseNumber}`,
+    }));
+
+    setSearchFormKey(Date.now());
+    setSidebarMode("search");
+    setIsSheetOpen(true);
   };
 
   const openRenameDialog = (id: string, currentName: string) => {
@@ -453,7 +469,15 @@ function PlannerView() {
               <SheetTitle className="flex items-center gap-2 text-lg">
                 {sidebarMode === "search" ? (
                   <>
-                    <SearchIcon className="h-5 w-5 text-muted-foreground" />{" "}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 -ml-1.5"
+                      onClick={() => setSidebarMode("view")}
+                      title="Back to My Courses"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </Button>
                     Find Courses
                   </>
                 ) : (
@@ -474,6 +498,7 @@ function PlannerView() {
                 <div className="flex flex-col min-h-full">
                   <div className="p-4 border-b bg-background sticky top-0 z-20 shadow-sm">
                     <SearchForm
+                      key={searchFormKey}
                       initialValues={localFilters}
                       isLoading={isLoading}
                       layout="sidebar"
@@ -564,6 +589,7 @@ function PlannerView() {
                           noOutline
                           key={course.id}
                           course={course}
+                          onSwitchSection={() => handleSwitchSection(course)}
                         />
                       ))}
                     </>
@@ -657,7 +683,6 @@ function PlannerView() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </>
   );
 }
