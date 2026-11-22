@@ -158,9 +158,9 @@ export function DesktopSchedule() {
                         </div>
 
                         <div className="space-y-1.5">
-                          <div className="flex items-center gap-1.5 text-[10px] opacity-80 truncate">
+                          <div className="flex items-center gap-1.5 text-[10px] opacity-80 min-w-0">
                             <BookOpen className="h-3 w-3 shrink-0" />
-                            <span className="truncate">
+                            <span className="truncate" dir="auto">
                               {event.course.title}
                             </span>
                           </div>
@@ -172,9 +172,9 @@ export function DesktopSchedule() {
                             )}
                             <span>{event.schedule.time}</span>
                           </div>
-                          <div className="flex items-center gap-1.5 text-[10px] opacity-80 truncate">
+                          <div className="flex items-center gap-1.5 text-[10px] opacity-80 min-w-0">
                             <MapPin className="h-3 w-3 shrink-0" />
-                            <span className="truncate">
+                            <span className="truncate" dir="auto">
                               {event.schedule.room || "TBA"}
                             </span>
                           </div>
