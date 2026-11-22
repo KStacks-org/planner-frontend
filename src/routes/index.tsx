@@ -239,7 +239,6 @@ function PlannerView() {
         cacheBust: true,
         backgroundColor: isDark ? "#0a0a0a" : "#ffffff",
         pixelRatio: 2,
-        skipFonts: true,
       });
 
       const filename =
